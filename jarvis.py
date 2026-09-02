@@ -1,5 +1,5 @@
 import speech_recognition as sr
-import pyttsx3
+from gtts import gTTS
 import datetime
 import webbrowser
 import os
@@ -11,16 +11,19 @@ class JarvisAI:
     def __init__(self):
         """Initialize Jarvis AI Voice Assistant"""
         self.recognizer = sr.Recognizer()
-        self.engine = pyttsx3.init()
-        self.engine.setProperty('rate', VOICE_RATE)
-        self.engine.setProperty('volume', VOICE_VOLUME)
         self.listening = True
         
     def speak(self, text):
         """Convert text to speech"""
         print(f"Jarvis: {text}")
-        self.engine.say(text)
-        self.engine.runAndWait()
+        try:
+            tts = gTTS(text=text, lang='en', slow=False)
+            tts.save("response.mp3")
+            os.system("afplay response.mp3")  # Mac command
+            # For Linux: os.system("mpg123 response.mp3")
+            # For Windows: os.system("start response.mp3")
+        except Exception as e:
+            print(f"Error in text-to-speech: {e}")
     
     def listen(self):
         """Listen to microphone input and convert to text"""
@@ -47,7 +50,7 @@ class JarvisAI:
         except Exception as e:
             print(f"Error: {e}")
             return None
-    
+     
     def get_time(self):
         """Get current time"""
         now = datetime.datetime.now()
@@ -78,14 +81,12 @@ class JarvisAI:
     def shutdown(self):
         """Shutdown the computer"""
         self.speak(f"Shutting down the system, sir.")
-        os.system("shutdown /s /t 1")  # Windows
-        # For Linux/Mac: os.system("shutdown -h now")
+        os.system("shutdown -h now")  # Mac/Linux
     
     def restart(self):
         """Restart the computer"""
         self.speak(f"Restarting the system, sir.")
-        os.system("shutdown /r /t 1")  # Windows
-        # For Linux/Mac: os.system("shutdown -r now")
+        os.system("shutdown -r now")  # Mac/Linux
     
     def greet(self):
         """Greet the owner"""
